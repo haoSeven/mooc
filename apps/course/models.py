@@ -27,10 +27,16 @@ class Course(models.Model):
         verbose_name_plural = verbose_name
 
     def get_lesson_nums(self):
+        # 获取课程章节数量
         return self.lesson_set.all().count()
 
     def get_learn_user(self):
+        # 获取学习本课程的5位用户
         return self.usercourse_set.all()[:5]
+
+    def get_course_lesson(self):
+        # 获取课程的所有章节
+        return self.lesson_set.all()
 
     def __unicode__(self):
         return self.name
@@ -45,15 +51,22 @@ class Lesson(models.Model):
         verbose_name = u'章节'
         verbose_name_plural = verbose_name
 
+    def __unicode__(self):
+        return self.name
+
 
 class Video(models.Model):
     lesson = models.ForeignKey(Lesson, verbose_name=u'章节')
     name = models.CharField(max_length=100, verbose_name=u'视频名')
+    url = models.CharField(max_length=200, verbose_name=u"访问地址", default="")
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u'添加时间')
 
     class Meta:
         verbose_name = u'视频'
         verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.name
 
 
 class CourseResource(models.Model):
