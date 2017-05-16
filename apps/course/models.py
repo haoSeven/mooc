@@ -4,7 +4,7 @@ from datetime import datetime
 
 from django.db import models
 
-from organization.models import CourseOrg
+from organization.models import CourseOrg, Teacher
 
 
 class Course(models.Model):
@@ -20,6 +20,9 @@ class Course(models.Model):
     category = models.CharField(default='后端开发', max_length=20, verbose_name=u'课程类别')
     image = models.ImageField(upload_to='course/%Y/%m', verbose_name=u'封面图片', max_length=100)
     click_nums = models.IntegerField(default=0, verbose_name=u'点击次数')
+    teacher = models.ForeignKey(Teacher, verbose_name=u'课程教师', null=True, blank=True)
+    need_know = models.CharField(default='', max_length=200, verbose_name=u'课程须知')
+    teacher_tell = models.CharField(default='', max_length=200, verbose_name=u'老师告诉你')
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u'添加时间')
 
     class Meta:
@@ -54,11 +57,16 @@ class Lesson(models.Model):
     def __unicode__(self):
         return self.name
 
+    def get_lesson_video(self):
+        # 获取章节视频
+        return self.video_set.all()
+
 
 class Video(models.Model):
     lesson = models.ForeignKey(Lesson, verbose_name=u'章节')
     name = models.CharField(max_length=100, verbose_name=u'视频名')
     url = models.CharField(max_length=200, verbose_name=u"访问地址", default="")
+    learn_time = models.IntegerField(default=0, verbose_name=u'学习时长(分钟数)')
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u'添加时间')
 
     class Meta:
