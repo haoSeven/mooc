@@ -21,7 +21,7 @@ from django.views.static import serve
 import xadmin
 
 from users.views import LoginView, RegisterView, ActiveUserView, ForgetView, ResetView, ModifyView
-from operation.views import AddFavView
+from operation.views import AddFavView, AddUserCommentView
 
 from mooc.settings import MEDIA_ROOT
 
@@ -39,6 +39,8 @@ urlpatterns = [
 
     # 用户收藏
     url(r'^add_fav/$', AddFavView.as_view(), name='add_fav'),
+    # 用户评论
+    url(r'^add_comment/$', AddUserCommentView.as_view(), name='add_comment'),
 
     # 课程机构url配置
     url(r'^org/', include('organization.urls', namespace='org')),

@@ -4,7 +4,7 @@ from django.views.generic import View
 from pure_pagination import PageNotAnInteger, Paginator
 
 from .models import Course, CourseResource
-from operation.models import UserFavorite
+from operation.models import UserFavorite, CourseComments
 
 
 class CourseListView(View):
@@ -82,4 +82,17 @@ class CourseInfoView(View):
         return render(request, 'course-video.html', {
             'course': course,
             'all_resources': all_resources,
+        })
+
+
+class CommentView(View):
+    def get(self, request, course_id):
+        course = Course.objects.get(id=int(course_id))
+        all_resources = CourseResource.objects.filter(course=course)
+        all_comments = CourseComments.objects.filter(course=course)
+
+        return render(request, 'course-comment.html', {
+            'course': course,
+            'all_resources': all_resources,
+            'all_comments': all_comments,
         })

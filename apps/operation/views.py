@@ -3,7 +3,8 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.http import HttpResponse
 
-from .models import UserFavorite
+from .models import UserFavorite, CourseComments
+from course.models import Course
 
 
 class AddFavView(View):
@@ -33,3 +34,27 @@ class AddFavView(View):
                 return HttpResponse('{"status":"success", "msg":"已收藏"}', content_type="application/json")
             else:
                 return HttpResponse('{"status":"fail", "msg":"收藏错误"}', content_type="application/json")
+
+
+class AddUserCommentView(View):
+    """
+    添加用户评论
+    """
+
+    def post(self, request):
+        if not request.user.is_authenticated():
+            # 判断用户登录状态
+            return HttpResponse('{"status":"fail", "msg":"用户未登录"}', content_type="application/json")
+
+        course_id = request.POST.get('course_id', 0)
+        comment = request.POST.get('comments', "")
+        if course_id > 0 and comment:
+            course_comment = CourseComments()
+            course = Course.objects.get(id=int(course_id))
+            course_comment.course = course
+            course_comment.comments = comment
+            course_comment.user = request.user
+            course_comment.save()
+            return HttpResponse('{"status":"success", "msg":"添加成功"}', content_type="application/json")
+        else:
+            return HttpResponse('{"status":"fail", "msg":"添加失败"}', content_type="application/json")

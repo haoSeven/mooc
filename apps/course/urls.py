@@ -2,7 +2,7 @@
 
 from django.conf.urls import url
 
-from .views import CourseListView, CourseDetailView, CourseInfoView
+from .views import CourseListView, CourseDetailView, CourseInfoView, CommentView
 
 __author__ = 'haoSev7'
 __date__ = '2017/5/14 0:30'
@@ -14,5 +14,7 @@ urlpatterns = [
     url(r'^detail/(?P<course_id>\d+)/$', CourseDetailView.as_view(), name='course_detail'),
     # 课程章节信息
     url(r'^info/(?P<course_id>\d+)/$', CourseInfoView.as_view(), name='course_info'),
+    # 课程评论页
+    url(r'comment/(?P<course_id>\d+)/$', CommentView.as_view(), name='course_comments')
 ]
 
