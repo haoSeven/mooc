@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.views.generic import View
 from pure_pagination import PageNotAnInteger, Paginator
 from django.http import HttpResponse
+from django.db.models import Q
 
 from .models import CourseOrg, CityDict, Teacher
 from operation.models import UserFavorite
@@ -19,6 +20,11 @@ class OrgView(View):
         all_city = CityDict.objects.all()
 
         hot_org = all_org.order_by("-click_nums")[:3]
+
+        # 机构搜索
+        kw = request.GET.get('keywords', '')
+        if kw:
+            all_org = all_org.filter(Q(name__icontains=kw) | Q(desc__icontains=kw))
 
         # 按城市分类
         city_id = request.GET.get('city', "")
@@ -176,6 +182,11 @@ class TeacherListView(View):
         all_teachers = Teacher.objects.all()
         # 对所有的教师进行倒序排序，选出收藏量最高的3个，显示为热门推荐
         hot_list = all_teachers.order_by('-fav_nums')[:3]
+
+        # 教师搜索
+        kw = request.GET.get('keywords', '')
+        if kw:
+            all_teachers = all_teachers.filter(Q(name__icontains=kw) | Q(work_company__icontains=kw))
 
         sort = request.GET.get('sort', '')
         if sort:
