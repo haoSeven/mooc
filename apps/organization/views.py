@@ -71,6 +71,7 @@ class AddUserAskView(View):
     def post(self, request):
         userask_form = UserAskForm(request.POST)
         if userask_form.is_valid():
+            # save默认参数commit=True，将表单内容保存到数据库中
             user_ask = userask_form.save(commit=True)
             return HttpResponse('{"status":"success"}', content_type="application/json")
         else:
