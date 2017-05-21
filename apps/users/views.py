@@ -1,4 +1,5 @@
 # _*_ coding:utf-8 _*_
+import json
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.backends import ModelBackend
@@ -177,7 +178,6 @@ class UploadImage(LoginRequiredMixin, View):
     修改头像
     使用form.ModelForm表单方式对上传的图片做保存
     """
-
     def post(self, request):
         # ModelForm : instance 接收一个已经存在的模型实例；如果提供，save() 将更新这个实例
         image_form = UploadImageForm(request.POST, request.FILES, instance=request.user)
@@ -186,3 +186,23 @@ class UploadImage(LoginRequiredMixin, View):
             return HttpResponse('{"status":"success"}', content_type="application/json")
         else:
             return HttpResponse('{"status":"fail"}', content_type="application/json")
+
+
+class UpdatePwdView(View):
+    """
+    用户个人中心密码修改
+    """
+
+    def post(self, request):
+        reset_form = ResetPwdForm(request.POST)
+        if reset_form.is_valid():
+            pwd = request.POST.get("password", "")
+            pwd2 = request.POST.get("password2", "")
+            if pwd != pwd2:
+                return HttpResponse('{"status": "fail", "msg": "两次密码不一样"}', content_type='application/json')
+            user = request.user
+            user.password = make_password(pwd2)
+            user.save()
+            return HttpResponse('{"status": "success"}', content_type='application/json')
+        else:
+            return HttpResponse(json.dumps(reset_form.errors), content_type='application/json')
