@@ -5,13 +5,30 @@ from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 from django.views.generic.base import View
 from django.contrib.auth.hashers import make_password
+from django.http import HttpResponse
 
 from users.models import UserProfile, EmailVerifyRecord
-from users.forms import LoginForm, RegisterForm, ForgetForm, ResetPwdForm
+from users.forms import LoginForm, RegisterForm, ForgetForm, ResetPwdForm, UploadImageForm
 from utils.send_email import send_email
+from utils.mixin_utils import LoginRequiredMixin
+
+__all__ = [
+    'CustomBackend',
+    'ActiveUserView',
+    'RegisterView',
+    'LoginView',
+    'ForgetView',
+    'ResetView',
+    'ModifyView',
+    'UserInfoView',
+    'UploadImage',
+]
 
 
 class CustomBackend(ModelBackend):
+    """
+    修改账号验证逻辑，用户名与邮箱都可以用于登录
+    """
     def authenticate(self, username=None, password=None, **kwargs):
         try:
             user = UserProfile.objects.get(Q(username=username) | Q(email=username))
@@ -106,6 +123,9 @@ class ForgetView(View):
 
 
 class ResetView(View):
+    """
+    密码重置页面
+    """
 
     def get(self, request, active_code):
         all_records = EmailVerifyRecord.objects.filter(code=active_code)
@@ -119,6 +139,9 @@ class ResetView(View):
 
 
 class ModifyView(View):
+    """
+    密码修改
+    """
 
     def post(self, request):
         reset_form = ResetPwdForm(request.POST)
@@ -136,3 +159,30 @@ class ModifyView(View):
         else:
             email = request.POST.get("email", "")
             return render(request, 'password_reset.html', {"email": email, "reset_form": reset_form})
+
+
+class UserInfoView(LoginRequiredMixin, View):
+    """
+    用户个人信息页面
+    """
+
+    def get(self, request):
+        return render(request, 'usercenter-info.html', {
+
+        })
+
+
+class UploadImage(LoginRequiredMixin, View):
+    """
+    修改头像
+    使用form.ModelForm表单方式对上传的图片做保存
+    """
+
+    def post(self, request):
+        # ModelForm : instance 接收一个已经存在的模型实例；如果提供，save() 将更新这个实例
+        image_form = UploadImageForm(request.POST, request.FILES, instance=request.user)
+        if image_form.is_valid():
+            image_form.save()
+            return HttpResponse('{"status":"success"}', content_type="application/json")
+        else:
+            return HttpResponse('{"status":"fail"}', content_type="application/json")
