@@ -40,3 +40,14 @@ class UploadImageForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['image']
+
+
+class UserInfoForm(forms.ModelForm):
+    """
+    用于修改用户基本信息的表单提交
+    继承UserProfile
+    """
+
+    class Meta:
+        model = UserProfile
+        fields = ['nick_name', 'birthday', 'gender', 'address', 'mobile']

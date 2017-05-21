@@ -2,7 +2,7 @@
 
 from django.conf.urls import url
 
-from .views import UserInfoView, UploadImage, UpdatePwdView
+from .views import UserInfoView, UploadImage, UpdatePwdView, SendEmailCodeView, UpdateEmailView
 
 __author__ = 'haoSev7'
 __date__ = '2017/5/21 14:24'
@@ -14,4 +14,8 @@ urlpatterns = [
     url(r'^upload/image/$', UploadImage.as_view(), name='upload_image'),
     # 修改密码
     url(r'^update/pwd/$', UpdatePwdView.as_view(), name='update_pwd'),
+    # 发送邮箱验证码
+    url(r'^sendemail_code/$', SendEmailCodeView.as_view(), name='sendemail_code'),
+    # 修改邮箱
+    url(r'^update_email/$', UpdateEmailView.as_view(), name='update_email'),
 ]
