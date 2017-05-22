@@ -3,7 +3,7 @@
 from django.conf.urls import url
 
 from .views import UserInfoView, UploadImage, UpdatePwdView, SendEmailCodeView, UpdateEmailView, MyCourseView, \
-    MyFavOrgView, MyFavTeacherView, MyFavCourseView
+    MyFavOrgView, MyFavTeacherView, MyFavCourseView, MyMessageView
 
 __author__ = 'haoSev7'
 __date__ = '2017/5/21 14:24'
@@ -27,4 +27,6 @@ urlpatterns = [
     url(r'^myfav/teacher/$', MyFavTeacherView.as_view(), name='my_fav_teacher'),
     # 我的教师收藏
     url(r'^myfav/course/$', MyFavCourseView.as_view(), name='my_fav_course'),
+    # 我的消息
+    url(r'^my_message/$', MyMessageView.as_view(), name='my_message'),
 ]

@@ -24,7 +24,7 @@
 					<div class="fl"><p>服务电话：<b>33333333</b></p></div>
 					<!--登录后跳转-->
 
-                            <div class="personal">
+                    <div class="personal">
                             <dl class="user fr">
                                 <dd>bobby<img class="down fr" src="/static/images/top_down.png"/></dd>
                                 <dt><img width="20" height="20" src="{{ MEDIA_URL }}{{ request.user.image }}"/></dt>
@@ -43,8 +43,9 @@
                                 </div>
                             </div>
                         </div>
-
-
+                    <a href="{% url 'user:my_message' %}">
+                        <div class="msg-num"><span id="MsgNum">{{ request.user.get_unread_nums }}</span></div>
+                    </a>
 				</div>
 			</div>
             {% else %}

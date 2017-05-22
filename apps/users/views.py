@@ -7,10 +7,11 @@ from django.db.models import Q
 from django.views.generic.base import View
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponse
+from pure_pagination import PageNotAnInteger, Paginator
 
 from users.models import UserProfile, EmailVerifyRecord
 from users.forms import LoginForm, RegisterForm, ForgetForm, ResetPwdForm, UploadImageForm, UserInfoForm
-from operation.models import UserCourse, UserFavorite
+from operation.models import UserCourse, UserFavorite, UserMessage
 from organization.models import CourseOrg, Teacher
 from course.models import Course
 from utils.send_email import send_email
@@ -83,6 +84,12 @@ class RegisterView(View):
             user_profile.email = username
             user_profile.password = make_password(password)
             user_profile.save()
+
+            # 添加用户消息
+            user_message = UserMessage()
+            user_message.user = user_profile.id
+            user_message.message = "欢迎注册Mooc 学习网"
+            user_message.save()
 
             send_email(username, "register")
             return render(request, 'login.html')
@@ -319,4 +326,27 @@ class MyFavCourseView(LoginRequiredMixin, View):
             course_list.append(course)
         return render(request, 'usercenter-fav-course.html', {
             'course_list': course_list,
+        })
+
+
+class MyMessageView(LoginRequiredMixin, View):
+    """
+    我的消息页面
+    """
+
+    def get(self, request):
+        all_messages = UserMessage.objects.filter(user=request.user.id)
+
+        # 分页功能
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        p = Paginator(all_messages, 5, request=request)
+
+        messages = p.page(page)
+
+        return render(request, 'usercenter-message.html', {
+            "messages": messages,
         })
